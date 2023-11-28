@@ -1,20 +1,23 @@
 import './App.css';
 import React, { useState } from 'react';
 import { loadDeck } from './utils/deckLoader';
+import FileLoader from './utils/FileLoader';
 import CardDeck from './components/CardDeck';
 
 const App = () => {
   const [currentDeck, setCurrentDeck] = useState(null);
   const [currentCard, setCurrentCard] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFileLoaderVisible, setIsFileLoaderVisible] = useState(false);
 
   const handleNewCard = () => {
     setCurrentIndex(prevIndex => prevIndex + 1);
   };
 
   const handleLoadDeck = async () => {
-    const loadedDeck = await loadDeck();
-    setCurrentDeck(loadedDeck);
+    setIsFileLoaderVisible(true);
+    // const loadedDeck = await loadDeck();
+    // setCurrentDeck(loadedDeck);
   };
 
   return (
@@ -26,7 +29,7 @@ const App = () => {
       <div className="rectangle"> {/* Use the rectangle class */}
         <button onClick={handleNewCard}>Show New Card</button>
         <button onClick={handleLoadDeck}>Load Deck</button>
-      </div>
+        {isFileLoaderVisible && <FileLoader onFileLoaded={(deck) => { setCurrentDeck(deck); setIsFileLoaderVisible(false); }} />} {/* Render FileLoader conditionally */}      </div>
     </div>
   );
 };
