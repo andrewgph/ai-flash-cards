@@ -22,10 +22,10 @@ const App = () => {
       <div className="rectangle"> {/* Use the rectangle class */}
         {currentDeck ? <div>{currentDeck.title}</div> : <div>Load a new deck</div>}
       </div>
-      <CardDeck onNewCard={handleNewCard} currentIndex={currentIndex} onLoadDeck={handleLoadDeck} />
+      <CardDeck onNewCard={handleNewCard} currentIndex={currentIndex} onLoadDeck={handleLoadDeck} currentDeck={currentDeck} />
       <div className="rectangle"> {/* Use the rectangle class */}
         <button onClick={handleNewCard}>Show New Card</button>
-        <button onClick={handleLoadDeck}>Load Different Deck</button>
+        <button onClick={handleLoadDeck}>Load Deck</button>
       </div>
     </div>
   );

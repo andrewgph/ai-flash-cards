@@ -8,15 +8,11 @@ const CardDeck = (props) => {
   const [title, setTitle] = useState(''); // Add this line
 
   useEffect(() => {
-    const fetchDeck = async () => {
-      const loadedDeck = await loadDeck();
-      setDeck(loadedDeck.cards);
-      setTitle(loadedDeck.title);
-      props.onLoadDeck(loadedDeck); // Add this line
-    };
-  
-    fetchDeck();
-  }, []);
+    if (props.currentDeck) {
+      setDeck(props.currentDeck.cards);
+      setTitle(props.currentDeck.title);
+    }
+  }, [props.currentDeck]);
 
   const handleCardAnswer = (cardId, qualityOfAnswer) => {
     // TODO: implement SM-2 algorithm
