@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Papa from 'papaparse';
 
 const FileLoader = ({ onFileLoaded }) => {
-  const [deck, setDeck] = useState(null);
+  const [deck] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];

@@ -1,12 +1,10 @@
 import './App.css';
 import React, { useState } from 'react';
-import { loadDeck } from './utils/deckLoader';
 import FileLoader from './utils/FileLoader';
 import CardDeck from './components/CardDeck';
 
 const App = () => {
   const [currentDeck, setCurrentDeck] = useState(null);
-  const [currentCard, setCurrentCard] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFileLoaderVisible, setIsFileLoaderVisible] = useState(false);
 

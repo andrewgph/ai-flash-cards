@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { loadDeck } from '../utils/deckLoader';
 import Flashcard from './Flashcard';
 
 const CardDeck = (props) => {
   const [deck, setDeck] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [title, setTitle] = useState(''); // Add this line
+  //const [title, setTitle] = useState(''); // Add this line
 
   useEffect(() => {
     if (props.currentDeck) {
       setDeck(props.currentDeck.cards);
-      setTitle(props.currentDeck.title);
+      //setTitle(props.currentDeck.title);
     }
   }, [props.currentDeck]);
 
