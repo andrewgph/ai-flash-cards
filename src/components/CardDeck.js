@@ -22,10 +22,7 @@ const CardDeck = (props) => {
   const currentCard = deck[currentIndex];
 
   return currentCard ? (
-    <div className="rectangle"> {/* Use the rectangle class */}
-      {/* <h2>{title}</h2> */}
       <Flashcard card={currentCard} onAnswer={handleCardAnswer} />
-    </div>
   ) : (
     <div>Loading deck...</div>
   );
