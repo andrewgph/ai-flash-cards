@@ -10,8 +10,6 @@ const App = () => {
 
   const showFileLoader = async () => {
     setIsFileLoaderVisible(true);
-    // const loadedDeck = await loadDeck();
-    // setCurrentDeck(loadedDeck);
   };
 
   return (
@@ -47,6 +45,7 @@ const App = () => {
         {/* Horizontal Line */}
         <hr className="border-t border-black" />
       </div>
+      
       <div className="flex justify-center items-center min-w-1/2 rounded-lg bg-white shadow-lg p-4 m-4">
         <CardDeck currentDeck={currentDeck} />
       </div>

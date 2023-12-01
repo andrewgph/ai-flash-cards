@@ -4,12 +4,10 @@ import Flashcard from './Flashcard';
 const CardDeck = (props) => {
   const [deck, setDeck] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  //const [title, setTitle] = useState(''); // Add this line
 
   useEffect(() => {
     if (props.currentDeck) {
       setDeck(props.currentDeck.cards);
-      //setTitle(props.currentDeck.title);
     }
   }, [props.currentDeck]);
 

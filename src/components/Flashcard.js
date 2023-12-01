@@ -4,7 +4,7 @@ const Flashcard = ({ card, onAnswer }) => {
   const [showBack, setShowBack] = useState(false);
 
   const handleUserInput = (qualityOfAnswer) => {
-    setShowBack(false); // Hide back of the card
+    setShowBack(false); // Switch back to front of card
     onAnswer(card.id, qualityOfAnswer);
   };
 
