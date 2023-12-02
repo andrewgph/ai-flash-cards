@@ -1,6 +1,6 @@
 import './App.css';
 import './tailwind.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FileLoader from './utils/FileLoader';
 import CardDeck from './components/CardDeck';
 
@@ -8,8 +8,28 @@ const App = () => {
   const [currentDeck, setCurrentDeck] = useState(null);
   const [isFileLoaderVisible, setIsFileLoaderVisible] = useState(false);
 
+  useEffect(() => {
+    const deck = localStorage.getItem('aiFlashCards.deck');
+    if (deck) {
+      const parsedDeck = JSON.parse(deck);
+      if (parsedDeck && typeof parsedDeck === 'object' && parsedDeck.hasOwnProperty('title') && parsedDeck.hasOwnProperty('cards')) {
+        console.log('Found deck:', deck);
+        setCurrentDeck(parsedDeck);
+      } else {
+        console.log('Found invalid deck:', deck);
+        localStorage.removeItem('aiFlashCards.deck');
+      }
+    }
+  }, []);
+
   const showFileLoader = async () => {
     setIsFileLoaderVisible(true);
+  };
+
+  const handleFileLoaded = (deck) => {
+    setCurrentDeck(deck);
+    localStorage.setItem('aiFlashCards.deck', JSON.stringify(deck));
+    setIsFileLoaderVisible(false);
   };
 
   return (
@@ -36,7 +56,7 @@ const App = () => {
             {/* TODO: use nicer overlay styling  */}
             {isFileLoaderVisible &&
               <div className="overlay">
-                <FileLoader onFileLoaded={(deck) => { setCurrentDeck(deck); setIsFileLoaderVisible(false); }} />
+                <FileLoader onFileLoaded={handleFileLoaded} />
               </div>
             }
           </div>

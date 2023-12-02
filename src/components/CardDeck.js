@@ -4,12 +4,16 @@ import { sm2, next_card_id } from '../utils/sm2';
 
 
 const CardDeck = (props) => {
-  const [deck, setDeck] = useState([]);
+  const [deck, setDeck] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (props.currentDeck) {
-      setDeck(props.currentDeck.cards);
+      setDeck(props.currentDeck);
+
+      const initialIndex = next_card_id(props.currentDeck.cards);
+      console.log('Starting with card index:', initialIndex);
+      setCurrentIndex(initialIndex);
     }
   }, [props.currentDeck]);
 
@@ -25,7 +29,7 @@ const CardDeck = (props) => {
       grade = 5
     }
 
-    const card = deck.find(card => card.id === cardId);
+    const card = deck.cards.find(card => card.id === cardId);
     const { repetitions, interval, easeFactor } = sm2(card.repetitions, card.interval, card.easeFactor, grade);
     const lastReviewedDate = new Date().toISOString();
 
@@ -33,16 +37,20 @@ const CardDeck = (props) => {
     const updatedCard = { ...card, repetitions, interval, easeFactor, lastReviewedDate};
     console.log('Updated card:', updatedCard);
   
-    const updatedDeck = deck.map(card => card.id === cardId ? updatedCard : card);
+    const updatedDeckCards = deck.cards.map(card => card.id === cardId ? updatedCard : card);
+    const updatedDeck = { ...deck, cards: updatedDeckCards };
     setDeck(updatedDeck);
 
+    // Save to local storage
+    localStorage.setItem('aiFlashCards.deck', JSON.stringify(updatedDeck));
+
     // Select a new card
-    const newIndex = qualityOfAnswer !== 'Again' ? next_card_id(deck) : currentIndex;
+    const newIndex = qualityOfAnswer !== 'Again' ? next_card_id(deck.cards) : currentIndex;
     console.log('Next card index:', newIndex);
     setCurrentIndex(newIndex);
   };
 
-  const currentCard = deck[currentIndex];
+  const currentCard = deck ? deck.cards[currentIndex] : null;
 
   return currentCard ? (
       <Flashcard card={currentCard} onAnswer={handleCardAnswer} />
