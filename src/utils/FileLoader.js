@@ -11,8 +11,17 @@ const FileLoader = ({ onFileLoaded }) => {
       complete: (results) => {
         const deck = {
           title: file.name, 
-          cards: results.data.map(row => ({ front: row.front, back: row.back })),
+          cards: results.data.map((row, index) => ({
+            id: index, 
+            front: row.front, 
+            back: row.back,
+            repetitions: row.repetitions ? row.repetitions : 0,
+            interval: row.interval ? row.interval : 0,
+            easeFactor: row.easeFactor ? row.easeFactor : 2.5,
+            lastReviewedDate: row.lastReviewedDate ? row.lastReviewedDate : null
+          })),
         };
+        console.log('Parsed deck:', deck);
         onFileLoaded(deck);
       }
     });
