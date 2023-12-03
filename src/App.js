@@ -2,11 +2,14 @@ import './App.css';
 import './tailwind.css';
 import React, { useState, useEffect } from 'react';
 import FileLoader from './utils/FileLoader';
+import OpenAIClient from './utils/OpenAIClient';
 import CardDeck from './components/CardDeck';
 
 const App = () => {
   const [currentDeck, setCurrentDeck] = useState(null);
   const [isFileLoaderVisible, setIsFileLoaderVisible] = useState(false);
+  const [isOpenAIKeyInputVisible, setIsOpenAIKeyInputVisible] = useState(false);
+  const [openAIClient, setOpenAIClient] = useState(null); 
 
   useEffect(() => {
     const deck = localStorage.getItem('aiFlashCards.deck');
@@ -32,6 +35,16 @@ const App = () => {
     setIsFileLoaderVisible(false);
   };
 
+  const showOpenAIAPIKeyInput = async () => {
+    setIsOpenAIKeyInputVisible(true);
+  };
+
+  const handleOpenAIAPIKeyInput = (textInput) => {
+    const client = new OpenAIClient(textInput);
+    setOpenAIClient(client);
+    setIsOpenAIKeyInputVisible(false);
+  };
+
   return (
     <div>
       <div className="w-full">
@@ -48,8 +61,28 @@ const App = () => {
           {/* Spacer */}
           <div className="flex-grow"></div>
           
-          {/* Button */}
-          <div className="flex-grow-0">
+          {/* Buttons */}
+          <div className="flex-grow-0 mr-4"> {/* Add right margin to the first button container */}
+            <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={showOpenAIAPIKeyInput}>
+              Set OpenAI Key
+            </button>
+            {/* TODO: use nicer overlay styling  */}
+            {isOpenAIKeyInputVisible &&
+              <div className="overlay">
+                <input 
+                  type="text" 
+                  className="input" 
+                  placeholder="Enter OpenAI Key" 
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      handleOpenAIAPIKeyInput(event.target.value);
+                    }
+                  }} 
+                />
+              </div>
+            }
+          </div>
+          <div className="flex-grow-0"> {/* No right margin for the second button container */}
             <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={showFileLoader}>
               Load Deck
             </button>
@@ -67,7 +100,7 @@ const App = () => {
       </div>
       
       <div className="flex justify-center items-center min-w-1/2 rounded-lg bg-white shadow-lg p-4 m-4">
-        <CardDeck currentDeck={currentDeck} />
+        <CardDeck currentDeck={currentDeck} openAIClient={openAIClient} />
       </div>
     </div>
   );

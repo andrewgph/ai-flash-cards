@@ -6,6 +6,7 @@ import { sm2, next_card_id } from '../utils/sm2';
 const CardDeck = (props) => {
   const [deck, setDeck] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [openAIClient, setOpenAIClient] = useState(null); 
 
   useEffect(() => {
     if (props.currentDeck) {
@@ -16,6 +17,32 @@ const CardDeck = (props) => {
       setCurrentIndex(initialIndex);
     }
   }, [props.currentDeck]);
+
+  useEffect(() => {
+    if (props.openAIClient) {
+      setOpenAIClient(props.openAIClient)
+      console.log('Setting openAIClient in CardDeck');
+    }
+  }, [props.openAIClient]);
+  
+  const handleTextAnswer = (cardId, textInput) => {
+    console.log('textInput:', textInput);
+
+    const card = deck.cards.find(card => card.id === cardId);
+
+    if (!openAIClient) {
+      console.log('No OpenAI client');
+      return;
+    }
+
+    // Get answer from OpenAI
+    openAIClient.gradeAnswer(card, textInput).then(summary => {
+        console.log('Using AI grade:', summary);
+        handleCardGrade(cardId, summary, null)
+    }).catch(error => {
+        console.error('Unable to get AI grade:', error);
+    });
+  }
 
   const handleCardAnswer = (cardId, qualityOfAnswer) => {
     var grade = 0
@@ -28,7 +55,10 @@ const CardDeck = (props) => {
     } else if (qualityOfAnswer === 'Easy') {
       grade = 5
     }
+    handleCardGrade(cardId, grade, qualityOfAnswer);
+  };
 
+  const handleCardGrade = (cardId, grade, qualityOfAnswer) => {
     const card = deck.cards.find(card => card.id === cardId);
     const { repetitions, interval, easeFactor } = sm2(card.repetitions, card.interval, card.easeFactor, grade);
     const lastReviewedDate = new Date().toISOString();
@@ -53,7 +83,7 @@ const CardDeck = (props) => {
   const currentCard = deck ? deck.cards[currentIndex] : null;
 
   return currentCard ? (
-      <Flashcard card={currentCard} onAnswer={handleCardAnswer} />
+      <Flashcard card={currentCard} onAnswer={handleCardAnswer} onTextAnswer={handleTextAnswer} />
   ) : (
     <div>Loading deck...</div>
   );
