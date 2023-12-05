@@ -76,6 +76,36 @@ class OpenAIClient {
             throw error;
         }
     }
+
+    async transcribeAudio(audioBlob) {
+      // Assuming 'data' is a Blob or File object containing the audio data
+      const formData = new FormData();
+      formData.append('file', audioBlob);  // 'data' should be a Blob or File object
+      formData.append('model', 'whisper-1');
+
+      try {
+          console.log('Making OpenAI request');
+          const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${this.apiKey}`,
+                  // Don't set Content-Type header for FormData,
+                  // as the browser will set it with the correct boundary
+              },
+              body: formData
+          });
+          console.log('Made OpenAI request');
+
+          const data = await response.json();
+          console.log(data);
+
+          console.log('Got OpenAI response:', data);
+
+          return data.text;
+      } catch (error) {
+          console.error('Error:', error);
+      }
+    }
 }
 
 export default OpenAIClient;

@@ -83,7 +83,7 @@ const CardDeck = (props) => {
   const currentCard = deck ? deck.cards[currentIndex] : null;
 
   return currentCard ? (
-      <Flashcard card={currentCard} onAnswer={handleCardAnswer} onTextAnswer={handleTextAnswer} />
+      <Flashcard card={currentCard} onAnswer={handleCardAnswer} onTextAnswer={handleTextAnswer} openAIClient={openAIClient} />
   ) : (
     <div>Loading deck...</div>
   );
