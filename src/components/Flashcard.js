@@ -11,6 +11,18 @@ const Flashcard = ({ card, onAnswer, onTextAnswer, openAIClient }) => {
   const [audioChunks, setAudioChunks] = useState([]);
   const [audioURL, setAudioURL] = useState('');
 
+  useEffect(() => {
+   if (openAIClient) {
+      openAIClient.textToSpeech(card.front).then(audioBlob => {
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      }).catch(error => {
+        console.error('Error transcribing audio:', error);
+      });
+   }
+  }, [card]); // Dependencies
+
   const startRecording = async () => {
     console.log('Getting permissions to record');
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

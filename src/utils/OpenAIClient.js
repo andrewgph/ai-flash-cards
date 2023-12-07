@@ -106,6 +106,33 @@ class OpenAIClient {
           console.error('Error:', error);
       }
     }
+
+    async textToSpeech(text) {
+      try {
+          console.log('Making OpenAI request');
+
+          const input_data = {
+            model: "tts-1",
+            input: text,
+            voice: "nova"
+          };
+
+          const response = await fetch("https://api.openai.com/v1/audio/speech", {
+            method: "POST",
+            headers: {
+              'Authorization': `Bearer ${this.apiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(input_data)
+          });
+          console.log('Made OpenAI request');
+
+          const speech_blob = response.blob();
+          return speech_blob;
+      } catch (error) {
+          console.error('Error:', error);
+      }
+    }
 }
 
 export default OpenAIClient;
