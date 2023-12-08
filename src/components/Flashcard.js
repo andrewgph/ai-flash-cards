@@ -57,6 +57,12 @@ const Flashcard = ({ card, onAnswer, onTextAnswer, openAIClient }) => {
       setAudioURL(audioUrl);
       setAudioChunks([]);
       const file = new File([audioBlob], `file${Date.now()}.mp3`, { type: mimeType });
+
+      if (!openAIClient) {
+        console.log('No OpenAI client so not transcribing audio');
+        return;
+      }
+
       openAIClient.transcribeAudio(file).then(text => {
         console.log('transcribed audio:', text);
         onTextAnswer(card.id, text);
@@ -97,18 +103,20 @@ const Flashcard = ({ card, onAnswer, onTextAnswer, openAIClient }) => {
           <div onClick={() => setShowBack(true)} className="flex items-center justify-center p-4 text-blue-800">
             {card.front}
           </div>
-          <div className="flex items-center justify-center p-4 text-blue-800">
-            <textarea className="w-full h-24 p-2 border rounded resize-y" placeholder="Optional answer" value={textAreaValue} onChange={handleTextAreaChange}></textarea>
-            <div className="flex justify-center mt-2">
-              <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700" onClick={handleButtonClick}>Submit</button>
+          {openAIClient && (
+            <div className="flex items-center justify-center p-4 text-blue-800">
+              <textarea className="w-full h-24 p-2 border rounded resize-y" placeholder="Optional answer" value={textAreaValue} onChange={handleTextAreaChange}></textarea>
+              <div className="flex justify-center mt-2">
+                <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700" onClick={handleButtonClick}>Submit</button>
+              </div>
+              <div className="flex justify-center mt-2">
+                <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700" onClick={isRecording ? stopRecording : startRecording}>
+                    {isRecording ? 'Stop Recording' : 'Start Recording'}
+                </button>
+                {/* {audioURL && <audio src={audioURL} controls />} */}
+              </div>
             </div>
-            <div className="flex justify-center mt-2">
-              <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700" onClick={isRecording ? stopRecording : startRecording}>
-                  {isRecording ? 'Stop Recording' : 'Start Recording'}
-              </button>
-              {/* {audioURL && <audio src={audioURL} controls />} */}
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>
