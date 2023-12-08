@@ -41,8 +41,16 @@ const DeckLoader = ({ onLoad }) => {
     <div>
       <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={showFileLoader}>Load Deck</button>
       {isFileLoaderVisible && 
-      <div className="overlay">
-        <input type="file" onChange={handleFileChange} />
+      <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white bg-opacity-50 p-4 rounded">
+          <input type="file" onChange={handleFileChange} />
+          <button 
+            onClick={() => setIsFileLoaderVisible(false)} 
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Cancel
+          </button>
+        </div>
       </div>}
     </div>
   );

@@ -1,4 +1,3 @@
-import './App.css';
 import './tailwind.css';
 import React, { useState } from 'react';
 import OpenAIClient from './utils/OpenAIClient';
@@ -44,17 +43,26 @@ const App = () => {
             </button>
             {/* TODO: use nicer overlay styling  */}
             {isOpenAIKeyInputVisible &&
-              <div className="overlay">
-                <input 
-                  type="text" 
-                  className="input" 
-                  placeholder="Enter OpenAI Key" 
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      handleOpenAIAPIKeyInput(event.target.value);
-                    }
-                  }} 
-                />
+              <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white bg-opacity-50 p-4 rounded flex flex-col items-end">
+                  <input 
+                    type="text" 
+                    className="input w-64" 
+                    placeholder="Enter OpenAI Key" 
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        handleOpenAIAPIKeyInput(event.target.value);
+                      }
+                    }} 
+                  />
+                  <div className="mt-4"></div> {/* Added margin-top for spacing */}
+                  <button 
+                    onClick={() => setIsOpenAIKeyInputVisible(false)} 
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             }
           </div>
