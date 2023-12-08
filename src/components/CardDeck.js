@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Flashcard from './Flashcard';
 import { sm2, next_card_id } from '../utils/sm2';
-
+import useDeck from '../hooks/useDeck';
 
 const CardDeck = (props) => {
   const [deck, setDeck] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [openAIClient, setOpenAIClient] = useState(null); 
+  const { saveDeck } = useDeck();
 
   useEffect(() => {
     if (props.currentDeck) {
@@ -45,34 +46,38 @@ const CardDeck = (props) => {
   }
 
   const handleCardAnswer = (cardId, qualityOfAnswer) => {
-    var grade = 0
+    let grade = 0; // Changed from var to let
     if (qualityOfAnswer === 'Again') {
-      grade = 0
+      grade = 0;
     } else if (qualityOfAnswer === 'Hard') {
-      grade = 1
+      grade = 1;
     } else if (qualityOfAnswer === 'Good') {
-      grade = 3
+      grade = 3;
     } else if (qualityOfAnswer === 'Easy') {
-      grade = 5
+      grade = 5;
     }
     handleCardGrade(cardId, grade, qualityOfAnswer);
   };
 
-  const handleCardGrade = (cardId, grade, qualityOfAnswer) => {
-    const card = deck.cards.find(card => card.id === cardId);
+  const updateCard = (card, grade) => {
     const { repetitions, interval, easeFactor } = sm2(card.repetitions, card.interval, card.easeFactor, grade);
     const lastReviewedDate = new Date().toISOString();
 
     // Update card with new repetitions, interval, and ease factor
-    const updatedCard = { ...card, repetitions, interval, easeFactor, lastReviewedDate};
+    return { ...card, repetitions, interval, easeFactor, lastReviewedDate};
+  }
+
+  const handleCardGrade = (cardId, grade, qualityOfAnswer) => {
+    const card = deck.cards.find(card => card.id === cardId);
+    const updatedCard = updateCard(card, grade);
     console.log('Updated card:', updatedCard);
-  
+
     const updatedDeckCards = deck.cards.map(card => card.id === cardId ? updatedCard : card);
     const updatedDeck = { ...deck, cards: updatedDeckCards };
     setDeck(updatedDeck);
 
     // Save to local storage
-    localStorage.setItem('aiFlashCards.deck', JSON.stringify(updatedDeck));
+    saveDeck(updatedDeck);
 
     // Select a new card
     const newIndex = qualityOfAnswer !== 'Again' ? next_card_id(deck.cards) : currentIndex;

@@ -8,6 +8,10 @@ const useDeck = () => {
     localStorage.setItem('aiFlashCards.deck', JSON.stringify(deck));
   };
 
+  const saveDeck = (deck) => {
+    localStorage.setItem('aiFlashCards.deck', JSON.stringify(deck));
+  };
+
   const clearDeck = () => {
     setCurrentDeck(null);
     localStorage.removeItem('aiFlashCards.deck');
@@ -21,7 +25,7 @@ const useDeck = () => {
     }
   }, []);
 
-  return { currentDeck, loadDeck, clearDeck };
+  return { currentDeck, loadDeck, clearDeck, saveDeck };
 };
 
 export default useDeck;
