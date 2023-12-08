@@ -24,6 +24,18 @@ const App = () => {
     setIsOpenAIKeyInputVisible(false);
   };
 
+  const saveDeckToFile = () => {
+    const dataStr = JSON.stringify(currentDeck);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+    const filename = window.prompt("Enter filename", "deck.json");
+  
+    let linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', filename);
+    linkElement.click();
+  }
+
   return (
     <div>
       <div className="w-full">
@@ -74,8 +86,17 @@ const App = () => {
               </div>
             }
           </div>
-          <div className="flex-grow-0"> {/* No right margin for the second button container */}
+          <div className="flex-grow-0"> {/* No right margin for the third button container */}
             <DeckLoader onLoad={loadDeck} />
+          </div>
+          <div className="flex-grow-0"> {/* Add right margin to the second button container */}
+            <button 
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4" 
+                title="Save current deck to a file"
+                onClick={saveDeckToFile}
+              >
+                Save Deck
+            </button>
           </div>
         </div>
 
