@@ -27,6 +27,7 @@ function filterAndRandomSelect(cards, filterFn, messageLengthFn) {
   return null;
 }
 
+// TODO: allow setting of random seed for testing or mocking random selection
 function next_card_id(cards) {
   // Check if any cards are due for review
   let cardId = filterAndRandomSelect(cards, card => {
