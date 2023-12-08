@@ -18,40 +18,36 @@ function sm2(repetitions, interval, easeFactor, grade) {
     return { repetitions, interval, easeFactor };
 }
 
+function filterAndRandomSelect(cards, filterFn, messageLengthFn) {
+  let filteredCards = cards.filter(filterFn);
+  console.log(messageLengthFn(filteredCards.length));
+  if (filteredCards.length > 0) {
+    return filteredCards[Math.floor(Math.random() * filteredCards.length)].id;
+  }
+  return null;
+}
+
 function next_card_id(cards) {
   // Check if any cards are due for review
-  let dueReviewCards = cards.filter(card => {
+  let cardId = filterAndRandomSelect(cards, card => {
     if (!card.lastReviewedDate) return false;
     const lastReviewedDate = new Date(card.lastReviewedDate);
     const now = new Date();
     const timeSinceLastReview = now.getTime() - lastReviewedDate.getTime();
     const daysSinceLastReview = timeSinceLastReview / (1000 * 3600 * 24);
     return daysSinceLastReview >= card.interval;
-  });
-  if (dueReviewCards.length > 0) {
-    console.log(`Found ${dueReviewCards.length} cards due for review.`);
-    return dueReviewCards[Math.floor(Math.random() * dueReviewCards.length)].id;
-  } else {
-    console.log('No cards due for review.');
-  }
+  }, (length) => `Found ${length} cards due for review`);
+  if (cardId) return cardId;
 
   // Check if any cards have never been reviewed
-  let neverReviewedCards = cards.filter(card => !card.lastReviewedDate);
-  if (neverReviewedCards.length > 0) {
-    console.log(`Found ${neverReviewedCards.length} never reviewed cards.`);
-    return neverReviewedCards[Math.floor(Math.random() * neverReviewedCards.length)].id;
-  } else {
-    console.log('All cards have been reviewed at least once.');
-  }
+  cardId = filterAndRandomSelect(cards, card => !card.lastReviewedDate,
+    (length) => `Found ${length} cards that have never been reviewed`);
+  if (cardId) return cardId;
 
-  // Check if any cards have an repetitions of 0 (haven't been answereed well yet)
-  let zeroRepetitionsCards = cards.filter(card => card.repetitions === 0);
-  if (zeroRepetitionsCards.length > 0) {
-    console.log(`Found ${zeroRepetitionsCards.length} cards with repetitions of 0.`);
-    return zeroRepetitionsCards[Math.floor(Math.random() * zeroRepetitionsCards.length)].id;
-  } else {
-    console.log('No cards with repetitions of 0.');
-  }
+  // Check if any cards have an repetitions of 0 (haven't been answered well yet)
+  cardId = filterAndRandomSelect(cards, card => card.repetitions === 0,
+    (length) => `Found ${length} cards with a repetitions of 0 (haven't been answered well yet)`);
+  if (cardId) return cardId;
 
   // Otherwise select a random card
   console.log('No cards to prioritize for review so selecting a random card.');
