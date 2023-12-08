@@ -44,6 +44,7 @@ const App = () => {
           <div className="flex-grow-0 mr-4"> {/* Add right margin to the first button container */}
             <button 
               className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" 
+              title="Set and Unset OpenAI Key to toggle AI features"
               onClick={showOpenAIAPIKeyInput}
             >
               {openAIClient ? 'Unset OpenAI Key' : 'Set OpenAI Key'}
