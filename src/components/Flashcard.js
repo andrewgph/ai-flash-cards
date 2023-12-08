@@ -104,14 +104,16 @@ const Flashcard = ({ card, onAnswer, onTextAnswer, openAIClient }) => {
             {card.front}
           </div>
           {openAIClient && (
-            <div className="flex items-center justify-center p-4 text-blue-800">
-              <textarea className="w-full h-24 p-2 border rounded resize-y" placeholder="Optional answer" value={textAreaValue} onChange={handleTextAreaChange}></textarea>
-              <div className="flex justify-center mt-2">
-                <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700" onClick={handleButtonClick}>Submit</button>
+            <div className="flex flex-col items-center justify-center p-4 text-blue-800">
+              <div className="w-full">
+                <textarea className="w-full h-24 p-2 border rounded resize-y" placeholder="Optional answer" value={textAreaValue} onChange={handleTextAreaChange}></textarea>
               </div>
               <div className="flex justify-center mt-2">
-                <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700" onClick={isRecording ? stopRecording : startRecording}>
-                    {isRecording ? 'Stop Recording' : 'Start Recording'}
+                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" onClick={handleButtonClick} title="Submits the text input for grading">Submit</button>
+              </div>
+              <div className="flex justify-center mt-2">
+                <button className="px-4 py-2 bg-blue-300 text-white rounded hover:bg-blue-500" title="Record voice input for grading" onClick={isRecording ? stopRecording : startRecording}>
+                    {isRecording ? 'End Recording' : 'Begin Recording'}
                 </button>
                 {/* {audioURL && <audio src={audioURL} controls />} */}
               </div>
