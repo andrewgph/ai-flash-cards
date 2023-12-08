@@ -20,9 +20,11 @@ const CardDeck = (props) => {
   }, [props.currentDeck]);
 
   useEffect(() => {
+    setOpenAIClient(props.openAIClient)
     if (props.openAIClient) {
-      setOpenAIClient(props.openAIClient)
       console.log('Setting openAIClient in CardDeck');
+    } else {
+      console.log('Unsetting openAIClient in CardDeck');
     }
   }, [props.openAIClient]);
   
