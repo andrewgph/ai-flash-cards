@@ -27,7 +27,27 @@ const CardDeck = (props) => {
       console.log('Unsetting openAIClient in CardDeck');
     }
   }, [props.openAIClient]);
+
+  useEffect(() => {
+    if (deck && deck.cards[currentIndex]) {
+      playCardAudio(deck.cards[currentIndex]);
+    }
+  }, [currentIndex]);
   
+  const playCardAudio = (card) => {
+    if (openAIClient) {
+      openAIClient.textToSpeech(card.front).then(audioBlob => {
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      }).catch(error => {
+        console.error('Error transcribing audio:', error);
+      });
+    } else {
+      console.log('No OpenAI client - so not generating speech to read card');
+    }
+  }
+
   const handleTextAnswer = (cardId, textInput) => {
     console.log('textInput:', textInput);
 
@@ -90,6 +110,11 @@ const CardDeck = (props) => {
       console.log('Next card index:', newIndex);
     }
     setCurrentIndex(newIndex);
+
+    // TODO: manually triggering the playCardAudio function as the useEffect wont trigger if the currentIndex is the same
+    if (newIndex === currentIndex) {
+      playCardAudio(deck.cards[newIndex]);
+    }
   };
 
   const currentCard = deck ? deck.cards[currentIndex] : null;

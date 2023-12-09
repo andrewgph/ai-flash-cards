@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 const mimeType = "audio/mp3";
 
@@ -9,18 +9,6 @@ const Flashcard = ({ card, onAnswer, onTextAnswer, openAIClient }) => {
   const mediaRecorder = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioChunks, setAudioChunks] = useState([]);
-
-  useEffect(() => {
-   if (openAIClient) {
-      openAIClient.textToSpeech(card.front).then(audioBlob => {
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        audio.play();
-      }).catch(error => {
-        console.error('Error transcribing audio:', error);
-      });
-   }
-  }, [card, openAIClient]); // Dependencies
 
   const startRecording = async () => {
     console.log('Getting permissions to record');
