@@ -38,17 +38,17 @@ function next_card_id(cards) {
     const daysSinceLastReview = timeSinceLastReview / (1000 * 3600 * 24);
     return daysSinceLastReview >= card.interval;
   }, (length) => `Found ${length} cards due for review`);
-  if (cardId) return cardId;
+  if (cardId !== null) return cardId;
 
   // Check if any cards have never been reviewed
   cardId = filterAndRandomSelect(cards, card => !card.lastReviewedDate,
     (length) => `Found ${length} cards that have never been reviewed`);
-  if (cardId) return cardId;
+  if (cardId !== null) return cardId;
 
   // Check if any cards have an repetitions of 0 (haven't been answered well yet)
   cardId = filterAndRandomSelect(cards, card => card.repetitions === 0,
     (length) => `Found ${length} cards with a repetitions of 0 (haven't been answered well yet)`);
-  if (cardId) return cardId;
+  if (cardId !== null) return cardId;
 
   // Otherwise select a random card
   console.log('No cards to prioritize for review so selecting a random card.');

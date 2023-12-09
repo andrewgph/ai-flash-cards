@@ -106,7 +106,7 @@ const CardDeck = (props) => {
     if (qualityOfAnswer === 'Again') {
       console.log('Again selected so repeating card with index:', currentIndex);
     } else {
-      newIndex = next_card_id(deck.cards);
+      newIndex = next_card_id(updatedDeck.cards);
       console.log('Next card index:', newIndex);
     }
     setCurrentIndex(newIndex);
