@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Papa from 'papaparse';
 
 const DeckLoader = ({ onLoad }) => {
-  const [deck] = useState(null);
   const [isFileLoaderVisible, setIsFileLoaderVisible] = useState(false);
 
   const showFileLoader = () => {
