@@ -16,7 +16,7 @@ If the OpenAI key is set, it includes the additional features:
 The OpenAI API key needs to be set on the client side. All API calls are made directly to OpenAI from the browser.
 
 You can try the app on the GitHub page for the project:
-http://andrewgph.github.com/ai-flash-cards
+https://andrewgph.github.io/ai-flash-cards
 
 ## Screenshot
 
