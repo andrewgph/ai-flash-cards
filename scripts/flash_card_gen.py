@@ -11,6 +11,11 @@ import io
 import tempfile
 import concurrent.futures
 import json
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 openai_client = openai.OpenAI()
 
@@ -67,6 +72,58 @@ def read_pdf_pages(pdf_path):
             page_to_text[page_num] = page.extractText()
     return page_to_text
 
+CONTENT_PAGE_SYSTEM_PROMPT = """
+You are a student trying to identify the chapters in a textbook.
+""".strip()
+
+CONTENT_PAGE_USER_TEMPLATE = """
+Given the following contents pages from a textbook.
+
+{contents_pages}
+""".strip()
+
+CONTENTS_JSON_INSTRUCTIONS = """
+Identify the chapter names and the first pages of each chapter.
+Ignore any summarized contents and focus on identifying the main numbered chapters in the book.
+Include an entry for the estimated last page of chapter content in the book, before any appendices or index.
+Output the information in a JSON format with the following structure:
+
+{
+  "chapter 1 name": page_number,
+  "chapter 2 name": page_number,
+  ...
+  "chapter n name": page_number,
+  "last page": page_number
+}
+
+Only output the JSON object, do not say anything else.
+""".strip()
+
+def find_contents_pages(page_to_text):
+    contents_pages = []
+    for page_number, page_text in page_to_text.items():
+        if "contents" in page_text.lower():
+            contents_pages.append(page_number)
+    return contents_pages
+
+def generate_chapter_json(page_to_text):
+    contents_pages = find_contents_pages(page_to_text)
+    contents_pages_text = "\n".join([page_to_text[i] for i in contents_pages])
+
+    user_prompt = CONTENT_PAGE_USER_TEMPLATE.format(contents_pages=contents_pages_text) + "\n\n" + CONTENTS_JSON_INSTRUCTIONS
+
+    response = openai_client.chat.completions.create(
+        model="gpt-4-1106-preview",
+        response_format={ "type": "json_object" },
+        messages=[{
+            "role": "system", "content": CONTENT_PAGE_SYSTEM_PROMPT,
+            "role": "user", "content": user_prompt
+        }],
+    )
+
+    chapters_json = json.loads(response.choices[0].message.content)
+    return chapters_json
+
 FLASH_CARD_SYSTEM_PROMPT = """
 You are a student who is trying to memorize the fundamental concepts introduced in a textbook.
 Generate flash cards with any important concepts from the following pdf text content.
@@ -91,35 +148,23 @@ Only output the JSON object, do not say anything else.
 Return an empty json array if no new concepts are introduced on the page.
 """.strip()
 
-# TODO: allow the previous and next page to be optional
 FLASH_CARD_USER_TEMPLATE = """
-Generate flash card json from the following pdf page content:
+Generate flash card json from the following chapter in a textbook:
 
-{page_content}
-
-You might need content from the previous page or next page so they are also included below.
-
-Previous page:
-
-{previous_page_content}
-
-Next page:
-
-{next_page_content}
+{chapter_content}
 """.strip()
 
-def generate_flash_cards_from_page_text(page_to_text, page_number):
-    page_content_prompt = FLASH_CARD_USER_TEMPLATE.format(
-        page_content=page_to_text[page_number],
-        previous_page_content=page_to_text[page_number - 1],
-        next_page_content=page_to_text[page_number + 1]
+@retry(wait=wait_exponential(multiplier=14, max=3600), stop=stop_after_attempt(8))
+def generate_flash_cards_from_chapter(chapter_text):
+    user_prompt = FLASH_CARD_USER_TEMPLATE.format(
+        chapter_content=chapter_text,
     ) + FLASH_CARD_JSON_INSTRUCTIONS
     response = openai_client.chat.completions.create(
         model="gpt-4-1106-preview",
         response_format={ "type": "json_object" },
         messages=[{
             "role": "system", "content": FLASH_CARD_SYSTEM_PROMPT,
-            "role": "user", "content": page_content_prompt
+            "role": "user", "content": user_prompt
         }],
     )
     print(response)
@@ -128,10 +173,22 @@ def generate_flash_cards_from_page_text(page_to_text, page_number):
 
 def generate_flash_cards_from_text(page_to_text):
     flash_cards = []
-    for page_number in range(1, max(page_to_text.keys())):
-        flash_card_json = generate_flash_cards_from_page_text(page_to_text, page_number)
+    
+    chapters_json = generate_chapter_json(page_to_text)
+    print("Using chapters: ", chapters_json)
+    chapters_list = sorted(list(chapters_json.items()), key=lambda x: x[1])
+    
+    for i in range(len(chapters_list) - 1):
+        chapter_name, first_page_number = chapters_list[i]
+        _, next_first_page_number = chapters_list[i+1]
+        print(f"{chapter_name}: {first_page_number} - {next_first_page_number - 1}")
+        chapter_text = "\n".join([page_to_text[i] for i in range(first_page_number, next_first_page_number)])
+
+        flash_card_json = generate_flash_cards_from_chapter(chapter_text)
+        print("Flash cards for chapter: ", flash_card_json)
         if flash_card_json:
             flash_cards.extend(flash_card_json["cards"])
+
     return {
         "cards": flash_cards
     }
