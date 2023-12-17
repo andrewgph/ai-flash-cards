@@ -21,7 +21,11 @@ const useDeck = () => {
     const deck = localStorage.getItem('aiFlashCards.deck');
     if (deck) {
       const parsedDeck = JSON.parse(deck);
-      setCurrentDeck(parsedDeck);
+      if (parsedDeck.cards && parsedDeck.cards.length > 0) {
+        setCurrentDeck(parsedDeck);
+      } else {
+        console.log('Found deck in local storage, but it was empty.');
+      }
     }
   }, []);
 
