@@ -40,10 +40,13 @@ function next_card_id(cards) {
   }, (length) => `Found ${length} cards due for review`);
   if (cardId !== null) return cardId;
 
-  // Check if any cards have never been reviewed
-  cardId = filterAndRandomSelect(cards, card => !card.lastReviewedDate,
-    (length) => `Found ${length} cards that have never been reviewed`);
-  if (cardId !== null) return cardId;
+  // For any cards which have never been reviewed, select the next one by id order.
+  // This assumes that the cards have an expected progression of the material.
+  let neverReviewedCards = cards.filter(card => !card.lastReviewedDate);
+  if (neverReviewedCards.length > 0) {
+    console.log(`Found ${neverReviewedCards.length} cards that have never been reviewed. Selecting the next one by id order.`);
+    return neverReviewedCards[0].id;
+  }
 
   // Check if any cards have an repetitions of 0 (haven't been answered well yet)
   cardId = filterAndRandomSelect(cards, card => card.repetitions === 0,
