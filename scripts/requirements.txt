@@ -1,0 +1,6 @@
+argparse
+openai
+PyPDF2
+wand
+Pillow
+pytesseract
